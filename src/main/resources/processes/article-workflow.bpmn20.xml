@@ -1,39 +1,68 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<definitions
-        xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL"
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-        xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
-        xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC"
-        xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI"
-        xmlns:flowable="http://flowable.org/bpmn"
-        typeLanguage="http://www.w3.org/2001/XMLSchema"
-        expressionLanguage="http://www.w3.org/1999/XPath"
-        targetNamespace="http://www.flowable.org/processdef">
-    <process id="articleReview"
-             name="A simple process for article review." isExecutable="true">
-        <startEvent id="start" />
-        <sequenceFlow sourceRef="start" targetRef="reviewArticle" />
-        <userTask id="reviewArticle" name="Review the submitted tutorial"
-                  flowable:candidateGroups="editors" />
-        <sequenceFlow sourceRef="reviewArticle" targetRef="decision" />
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:flowable="http://flowable.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.flowable.org/processdef">
+    <process id="articleReview" name="Article review" isExecutable="true">
+        <documentation>A simple process for article review.</documentation>
+        <startEvent id="startEvent1" flowable:formFieldValidation="true" />
+        <userTask id="reviewArticle" name="Review the submitted tutorial" flowable:candidateGroups="editors" flowable:formFieldValidation="true" />
         <exclusiveGateway id="decision" />
-        <sequenceFlow sourceRef="decision" targetRef="tutorialApproved">
-            <conditionExpression xsi:type="tFormalExpression">
-                <![CDATA[${approved}]]>
-            </conditionExpression>
+        <sequenceFlow id="sid-5F75BE26-012C-4E98-96B6-0B07B226D722" sourceRef="reviewArticle" targetRef="decision" />
+        <serviceTask id="tutorialApproved" name="Publish the approved tutorial." flowable:class="io.github.xinshepherd.flowable.service.PublishArticleService" />
+        <serviceTask id="tutorialRejected" name="Send out rejection email" flowable:class="io.github.xinshepherd.flowable.service.SendMailService" />
+        <endEvent id="sid-072ABFD6-EA9E-4160-AFD0-7EA2C2BC396F" />
+        <sequenceFlow id="sid-DD703899-D618-4E92-82DC-A3761EE80779" sourceRef="tutorialApproved" targetRef="sid-072ABFD6-EA9E-4160-AFD0-7EA2C2BC396F" />
+        <sequenceFlow id="sid-3BF49AC5-CF18-448D-91E2-0D2909D8A957" sourceRef="tutorialRejected" targetRef="sid-072ABFD6-EA9E-4160-AFD0-7EA2C2BC396F" />
+        <sequenceFlow id="sid-AE852898-F461-4A84-9B9E-9C893888785E" sourceRef="startEvent1" targetRef="reviewArticle" />
+        <sequenceFlow id="sid-E8DAD830-B9FA-48E0-8A66-476A0D1B7DDB" name="yes" sourceRef="decision" targetRef="tutorialApproved">
+            <conditionExpression xsi:type="tFormalExpression"><![CDATA[${approved}]]></conditionExpression>
         </sequenceFlow>
-        <sequenceFlow sourceRef="decision" targetRef="tutorialRejected">
-            <conditionExpression xsi:type="tFormalExpression">
-                <![CDATA[${!approved}]]>
-            </conditionExpression>
+        <sequenceFlow id="sid-2D42B0DC-7027-414F-9A70-A940A1FABA4E" name="no" sourceRef="decision" targetRef="tutorialRejected">
+            <conditionExpression xsi:type="tFormalExpression"><![CDATA[${!approved}]]></conditionExpression>
         </sequenceFlow>
-        <serviceTask id="tutorialApproved" name="Publish the approved tutorial."
-                     flowable:class="io.github.xinshepherd.flowable.service.PublishArticleService" />
-        <sequenceFlow sourceRef="tutorialApproved" targetRef="end" />
-        <serviceTask id="tutorialRejected" name="Send out rejection email"
-                     flowable:class="io.github.xinshepherd.flowable.service.SendMailService" />
-        <sequenceFlow sourceRef="tutorialRejected" targetRef="end" />
-        <endEvent id="end" />
     </process>
+    <bpmndi:BPMNDiagram id="BPMNDiagram_articleReview">
+        <bpmndi:BPMNPlane bpmnElement="articleReview" id="BPMNPlane_articleReview">
+            <bpmndi:BPMNShape bpmnElement="startEvent1" id="BPMNShape_startEvent1">
+                <omgdc:Bounds height="30.0" width="30.0" x="75.0" y="175.0" />
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNShape bpmnElement="reviewArticle" id="BPMNShape_reviewArticle">
+                <omgdc:Bounds height="80.0" width="100.0" x="270.0" y="150.0" />
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNShape bpmnElement="decision" id="BPMNShape_decision">
+                <omgdc:Bounds height="40.0" width="40.0" x="450.0" y="170.0" />
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNShape bpmnElement="tutorialApproved" id="BPMNShape_tutorialApproved">
+                <omgdc:Bounds height="80.0" width="100.0" x="623.0" y="105.0" />
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNShape bpmnElement="tutorialRejected" id="BPMNShape_tutorialRejected">
+                <omgdc:Bounds height="80.0" width="100.0" x="623.0" y="241.0" />
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNShape bpmnElement="sid-072ABFD6-EA9E-4160-AFD0-7EA2C2BC396F" id="BPMNShape_sid-072ABFD6-EA9E-4160-AFD0-7EA2C2BC396F">
+                <omgdc:Bounds height="28.0" width="28.0" x="863.0" y="176.0" />
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNEdge bpmnElement="sid-5F75BE26-012C-4E98-96B6-0B07B226D722" id="BPMNEdge_sid-5F75BE26-012C-4E98-96B6-0B07B226D722">
+                <omgdi:waypoint x="369.9499999998728" y="190.0" />
+                <omgdi:waypoint x="450.0" y="190.0" />
+            </bpmndi:BPMNEdge>
+            <bpmndi:BPMNEdge bpmnElement="sid-E8DAD830-B9FA-48E0-8A66-476A0D1B7DDB" id="BPMNEdge_sid-E8DAD830-B9FA-48E0-8A66-476A0D1B7DDB">
+                <omgdi:waypoint x="486.78981854838685" y="186.83064516129033" />
+                <omgdi:waypoint x="623.0" y="156.22333333333333" />
+            </bpmndi:BPMNEdge>
+            <bpmndi:BPMNEdge bpmnElement="sid-DD703899-D618-4E92-82DC-A3761EE80779" id="BPMNEdge_sid-DD703899-D618-4E92-82DC-A3761EE80779">
+                <omgdi:waypoint x="722.9499999999998" y="156.01838235294113" />
+                <omgdi:waypoint x="863.3181964222147" y="186.98362476781026" />
+            </bpmndi:BPMNEdge>
+            <bpmndi:BPMNEdge bpmnElement="sid-AE852898-F461-4A84-9B9E-9C893888785E" id="BPMNEdge_sid-AE852898-F461-4A84-9B9E-9C893888785E">
+                <omgdi:waypoint x="104.94999965443563" y="190.0" />
+                <omgdi:waypoint x="269.9999999998888" y="190.0" />
+            </bpmndi:BPMNEdge>
+            <bpmndi:BPMNEdge bpmnElement="sid-3BF49AC5-CF18-448D-91E2-0D2909D8A957" id="BPMNEdge_sid-3BF49AC5-CF18-448D-91E2-0D2909D8A957">
+                <omgdi:waypoint x="722.9499999999998" y="258.69607843137254" />
+                <omgdi:waypoint x="864.2112244704983" y="195.6844226527516" />
+            </bpmndi:BPMNEdge>
+            <bpmndi:BPMNEdge bpmnElement="sid-2D42B0DC-7027-414F-9A70-A940A1FABA4E" id="BPMNEdge_sid-2D42B0DC-7027-414F-9A70-A940A1FABA4E">
+                <omgdi:waypoint x="483.59560730126236" y="196.35315699658705" />
+                <omgdi:waypoint x="623.0" y="258.65432098765433" />
+            </bpmndi:BPMNEdge>
+        </bpmndi:BPMNPlane>
+    </bpmndi:BPMNDiagram>
 </definitions>
